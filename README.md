@@ -1,4 +1,4 @@
-# evOps CI/CD Pipeline Project
+# DevOps CI/CD Pipeline Project
 
 # End-to-End CI/CD Pipeline Using Jenkins, Docker, Kubernetes (EKS), Prometheus & Grafana
 
@@ -16,6 +16,10 @@ This project demonstrates a complete DevOps CI/CD pipeline that automates:
 - Monitoring using Prometheus and Grafana
 
 The entire workflow is automated using Jenkins Pipeline.
+
+GitHub Repository:
+
+https://github.com/Sagar-salve-49/sample-python-app.git
 
 ---
 
@@ -63,7 +67,7 @@ Developer Push Code
 
 | Resource | Count | Type |
 |---|---|---|
-| Jenkins EC2 | 1 | t2.medium |
+| Jenkins EC2 | 1 | c7i-flex.large |
 | EKS Worker Nodes | 2 | t3.small |
 | EKS Cluster | 1 | Managed |
 
@@ -93,7 +97,7 @@ sample-python-app/
 ## EC2 Configuration
 
 - AMI: Ubuntu 22.04
-- Instance Type: t2.medium
+- Instance Type: c7i-flex.large
 - Storage: 20 GB
 
 ## Security Group Ports
@@ -102,8 +106,9 @@ sample-python-app/
 |---|---|
 | 22 | SSH |
 | 8080 | Jenkins |
+| 5000 | Flask Application |
 | 3000 | Grafana |
-| 80 | Application |
+| 80 | HTTP |
 | 443 | HTTPS |
 
 ---
@@ -115,7 +120,7 @@ sudo apt update -y
 sudo apt install openjdk-21-jdk -y
 ```
 
-Verify:
+Verify Java:
 
 ```bash
 java -version
@@ -141,17 +146,29 @@ sudo apt update
 sudo apt install jenkins -y
 ```
 
-Start Jenkins:
+Enable and Start Jenkins:
 
 ```bash
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 ```
 
+Check Jenkins Status:
+
+```bash
+sudo systemctl status jenkins
+```
+
 Access Jenkins:
 
 ```text
 http://<JENKINS_PUBLIC_IP>:8080
+```
+
+Get Jenkins Initial Password:
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
 ---
@@ -162,22 +179,36 @@ http://<JENKINS_PUBLIC_IP>:8080
 sudo apt install docker.io -y
 ```
 
+Enable Docker:
+
 ```bash
 sudo systemctl enable docker
 sudo systemctl start docker
 ```
 
-Add Docker permissions:
+Add Docker Permissions:
 
 ```bash
 sudo usermod -aG docker ubuntu
 sudo usermod -aG docker jenkins
 ```
 
+Apply Changes:
+
+```bash
+newgrp docker
+```
+
 Restart Jenkins:
 
 ```bash
 sudo systemctl restart jenkins
+```
+
+Verify Docker:
+
+```bash
+docker --version
 ```
 
 ---
@@ -191,10 +222,13 @@ https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
 ```bash
 chmod +x kubectl
+```
+
+```bash
 sudo mv kubectl /usr/local/bin/
 ```
 
-Verify:
+Verify kubectl:
 
 ```bash
 kubectl version --client
@@ -214,7 +248,7 @@ curl --silent --location \
 sudo mv /tmp/eksctl /usr/local/bin
 ```
 
-Verify:
+Verify eksctl:
 
 ```bash
 eksctl version
@@ -240,7 +274,13 @@ unzip awscliv2.zip
 sudo ./aws/install
 ```
 
-Configure AWS CLI:
+Verify AWS CLI:
+
+```bash
+aws --version
+```
+
+Configure AWS:
 
 ```bash
 aws configure
@@ -285,7 +325,19 @@ def health():
     return "healthy"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    app.run(host='0.0.0.0', port=5000)
+```
+
+Run Application:
+
+```bash
+python3 app.py
+```
+
+Access Application:
+
+```text
+http://<SERVER-IP>:5000
 ```
 
 ---
@@ -301,7 +353,7 @@ flask
 # Step 11: Create .env.example
 
 ```text
-APP_PORT=3000
+APP_PORT=5000
 ```
 
 ---
@@ -319,9 +371,21 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 5000
 
 CMD ["python", "app.py"]
+```
+
+Build Docker Image:
+
+```bash
+docker build -t sample-python-app .
+```
+
+Run Container:
+
+```bash
+docker run -d -p 5000:5000 sample-python-app
 ```
 
 ---
@@ -355,7 +419,13 @@ spec:
         image: sagarsalve49/sample-python-app:latest
 
         ports:
-        - containerPort: 3000
+        - containerPort: 5000
+```
+
+Apply Deployment:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
 ```
 
 ---
@@ -379,7 +449,19 @@ spec:
 
   ports:
     - port: 80
-      targetPort: 3000
+      targetPort: 5000
+```
+
+Apply Service:
+
+```bash
+kubectl apply -f k8s/service.yaml
+```
+
+Verify Service:
+
+```bash
+kubectl get svc
 ```
 
 ---
@@ -419,11 +501,11 @@ pipeline {
             steps {
                 sh '''
                 docker run -d --name test-app-container \
-                -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG
+                -p 5000:5000 $IMAGE_NAME:$IMAGE_TAG
 
                 sleep 10
 
-                curl -f http://localhost:3000/health
+                curl -f http://localhost:5000/health
 
                 docker stop test-app-container
                 docker rm test-app-container
@@ -472,6 +554,7 @@ pipeline {
                 sh '''
                 kubectl rollout status deployment/sample-app
                 kubectl get pods
+                kubectl get svc
                 '''
             }
         }
@@ -494,25 +577,43 @@ pipeline {
 
 # Step 16: Install Jenkins Plugins
 
-Installed Plugins:
+Go to:
 
+```text
+Manage Jenkins
+→ Plugins
+→ Available Plugins
+```
+
+Install the following plugins:
+
+- Git Plugin
+- GitHub Integration Plugin
 - Docker Pipeline
-- GitHub Integration
 - Kubernetes
 - Pipeline
+- Pipeline Stage View
 - Credentials Binding
+
+Restart Jenkins after plugin installation.
 
 ---
 
 # Step 17: Configure DockerHub Credentials
 
-Jenkins:
+Jenkins Path:
 
 ```text
 Manage Jenkins
 → Credentials
 → Global Credentials
 → Add Credentials
+```
+
+Credential Type:
+
+```text
+Username with Password
 ```
 
 Credential ID:
@@ -532,18 +633,37 @@ New Item
 → Git
 ```
 
-Add GitHub repository URL.
+Repository URL:
+
+```text
+https://github.com/Sagar-salve-49/sample-python-app.git
+```
+
+Branch:
+
+```text
+*/main
+```
+
+Script Path:
+
+```text
+Jenkinsfile
+```
+
+Save and Build Pipeline.
 
 ---
 
 # Step 19: Configure GitHub Webhook
 
-GitHub:
+GitHub Path:
 
 ```text
 Repository
 → Settings
 → Webhooks
+→ Add Webhook
 ```
 
 Payload URL:
@@ -551,6 +671,20 @@ Payload URL:
 ```text
 http://<JENKINS_PUBLIC_IP>:8080/github-webhook/
 ```
+
+Content Type:
+
+```text
+application/json
+```
+
+Select:
+
+```text
+Just the push event
+```
+
+Save Webhook.
 
 ---
 
@@ -560,6 +694,12 @@ http://<JENKINS_PUBLIC_IP>:8080/github-webhook/
 
 ```bash
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Verify Helm:
+
+```bash
+helm version
 ```
 
 ---
@@ -577,10 +717,61 @@ helm repo update
 
 ---
 
-## Install Prometheus & Grafana
+## Install Monitoring Stack
 
 ```bash
 helm install monitoring prometheus-community/kube-prometheus-stack
+```
+
+Check Monitoring Pods:
+
+```bash
+kubectl get pods
+```
+
+---
+
+# Step 21: Access Prometheus
+
+Port Forward Prometheus:
+
+```bash
+kubectl port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090
+```
+
+Access:
+
+```text
+http://localhost:9090
+```
+
+---
+
+# Step 22: Access Grafana
+
+Get Grafana Password:
+
+```bash
+kubectl get secret monitoring-grafana \
+-o jsonpath="{.data.admin-password}" | base64 --decode
+```
+
+Port Forward Grafana:
+
+```bash
+kubectl port-forward svc/monitoring-grafana 3000:80
+```
+
+Access Grafana:
+
+```text
+http://localhost:3000
+```
+
+Default Username:
+
+```text
+admin
 ```
 
 ---
@@ -716,7 +907,7 @@ http://<LOADBALANCER-URL>
 
 ---
 
-## 2. Jenkins Pipeline Success
+## 2. Jenkins Pipeline Stage View
 
 (Add Screenshot Here)
 
@@ -740,19 +931,25 @@ http://<LOADBALANCER-URL>
 
 ---
 
-## 6. Running Application
+## 6. Running Flask Application
 
 (Add Screenshot Here)
 
 ---
 
-## 7. Grafana CPU & Memory Monitoring
+## 7. Prometheus Dashboard
 
 (Add Screenshot Here)
 
 ---
 
-## 8. Grafana Pod Monitoring
+## 8. Grafana CPU & Memory Monitoring
+
+(Add Screenshot Here)
+
+---
+
+## 9. Grafana Pod Monitoring
 
 (Add Screenshot Here)
 
