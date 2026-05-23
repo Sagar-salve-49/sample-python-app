@@ -418,15 +418,15 @@ pipeline {
         stage('Test Application') {
             steps {
                 sh '''
-                docker run -d --name test-container \
+                docker run -d --name test-app-container \
                 -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG
 
                 sleep 10
 
                 curl -f http://localhost:3000/health
 
-                docker stop test-container
-                docker rm test-container
+                docker stop test-app-container
+                docker rm test-app-container
                 '''
             }
         }
