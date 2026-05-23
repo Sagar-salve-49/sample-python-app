@@ -22,4 +22,4 @@ spec:
         image: sagarsalve49/sample-python-app:latest
 
         ports:
-        - containerPort: 5000
+        - containerPort: 3000
