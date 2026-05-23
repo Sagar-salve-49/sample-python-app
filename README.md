@@ -780,56 +780,55 @@ admin
 
 ## 1. GitHub Repository
 
-![GitHub Repository](screenshots/github.png)
+![GitHub Repository](./screenshots/github.png)
 
 ---
 
 ## 2. Jenkins Pipeline Stage View
 
-![Pipeline Stage View](screenshots/pipeline.png)
+![Pipeline Stage View](./screenshots/Jenkins-Pipeline-Stage.png)
 
 ---
 
 ## 3. DockerHub Repository
 
-![DockerHub Repository](screenshots/dockerhub.png)
+![DockerHub Repository](./screenshots/DockerHub-Repository.png)
 
 ---
 
 ## 4. Kubernetes Pods
 
-![Kubernetes Pods](screenshots/pods.png)
+![Kubernetes Pods](./screenshots/Kubernetes-Pods.png)
 
 ---
 
 ## 5. Kubernetes Services
 
-![Kubernetes Services](screenshots/services.png)
+![Kubernetes Services](./screenshots/Kubernetes-Services.png)
 
 ---
 
 ## 6. Running Flask Application
 
-![Running Flask Application](screenshots/app.png)
+![Running Flask Application](./screenshots/Running-Flask-Application.png)
 
 ---
 
 ## 7. Prometheus Dashboard
 
-![Prometheus Dashboard](screenshots/prometheus.png)
+![Prometheus Dashboard](./screenshots/Prometheus-Dashboard.png)
 
 ---
 
 ## 8. Grafana CPU & Memory Monitoring
 
-![Grafana CPU Monitoring](screenshots/grafana-cpu.png)
+![Grafana Monitoring](./screenshots/Grafana-Monitoring.png)
 
 ---
 
 ## 9. Grafana Pod Monitoring
 
-![Grafana Pod Monitoring](screenshots/grafana-pod.png)
-
+![Grafana Pod Monitoring](./screenshots/Grafana-Pod-Monitoring.png)
 ---
 
 # Conclusion
