@@ -1,4 +1,4 @@
-# DevOps CI/CD Pipeline Project
+# evOps CI/CD Pipeline Project
 
 # End-to-End CI/CD Pipeline Using Jenkins, Docker, Kubernetes (EKS), Prometheus & Grafana
 
