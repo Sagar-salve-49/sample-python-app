@@ -28,11 +28,11 @@ pipeline {
             steps {
                 sh '''
                 docker run -d --name test-app-container \
-                -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG
+                -p 5000:5000 $IMAGE_NAME:$IMAGE_TAG
 
                 sleep 10
 
-                curl -f http://localhost:3000/health
+                curl -f http://localhost:5000/health
 
                 docker stop test-app-container
                 docker rm test-app-container
