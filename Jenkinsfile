@@ -32,7 +32,7 @@ pipeline {
 
                 sleep 10
 
-                curl -f http://localhost:3000/health
+                curl -f http://localhost:5000/health
 
                 docker stop test-container
                 docker rm test-container
