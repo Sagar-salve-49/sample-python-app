@@ -9,22 +9,23 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/Sagar-salve-49/sample-python-app.git'
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                sh '''
+                docker build -t $IMAGE_NAME:$IMAGE_TAG .
+                '''
             }
         }
 
-        stage('Test') {
+        stage('Test Application') {
             steps {
-
                 sh '''
                 docker run -d --name test-container \
                 -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG
@@ -39,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Push Image') {
+        stage('Push Docker Image') {
 
             steps {
 
@@ -49,18 +50,16 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
 
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
 
-                    sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
-
-                    sh 'docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest'
-
-                    sh 'docker push $IMAGE_NAME:latest'
+                    docker push $IMAGE_NAME:$IMAGE_TAG
+                    '''
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to EKS') {
 
             steps {
 
@@ -73,6 +72,28 @@ pipeline {
                 kubectl apply -f k8s/service.yaml
                 '''
             }
+        }
+
+        stage('Verify Deployment') {
+
+            steps {
+
+                sh '''
+                kubectl rollout status deployment/sample-app
+                kubectl get pods
+                '''
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo 'CI/CD Pipeline Executed Successfully'
+        }
+
+        failure {
+            echo 'Pipeline Failed'
         }
     }
 }
