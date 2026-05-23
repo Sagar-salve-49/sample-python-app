@@ -776,182 +776,59 @@ admin
 
 ---
 
-# Monitoring Features
-
-The following metrics are monitored:
-
-- CPU Usage
-- Memory Usage
-- Pod Health
-- Node Monitoring
-- Container Monitoring
-- Kubernetes Cluster Health
-
----
-
-# Important Commands
-
-## Check Pods
-
-```bash
-kubectl get pods
-```
-
----
-
-## Check Services
-
-```bash
-kubectl get svc
-```
-
----
-
-## Check Nodes
-
-```bash
-kubectl get nodes
-```
-
----
-
-## Check Node Metrics
-
-```bash
-kubectl top nodes
-```
-
----
-
-## Check Pod Metrics
-
-```bash
-kubectl top pods
-```
-
----
-
-# CI/CD Pipeline Flow
-
-```text
-Developer Push Code
-        ↓
-GitHub Repository
-        ↓
-Jenkins Pipeline Triggered
-        ↓
-Docker Image Build
-        ↓
-Application Testing
-        ↓
-Docker Image Push to DockerHub
-        ↓
-Deploy to Kubernetes (EKS)
-        ↓
-Monitoring with Prometheus & Grafana
-```
-
----
-
-# Monitoring Dashboards
-
-## Grafana Dashboards Used
-
-- Kubernetes / Compute Resources / Cluster
-- Kubernetes / Compute Resources / Pod
-- Kubernetes / Compute Resources / Node (Pods)
-
-These dashboards monitor:
-
-- CPU Utilization
-- Memory Utilization
-- Pod Health
-- Container Status
-- Cluster Metrics
-
----
-
-# Challenges Faced
-
-- AWS IAM authentication issue
-- EKS node provisioning issue
-- Jenkins Kubernetes authentication issue
-- Grafana accessibility issue
-
----
-
-# Solutions Implemented
-
-- Reconfigured AWS credentials
-- Changed node type to t3.small
-- Copied kubeconfig to Jenkins user
-- Used Grafana port-forwarding
-
----
-
-# Final Output
-
-## Application URL
-
-```text
-http://<LOADBALANCER-URL>
-```
-
----
-
 # Screenshots
 
 ## 1. GitHub Repository
 
-(Add Screenshot Here)
+![GitHub Repository](screenshots/github.png)
 
 ---
 
 ## 2. Jenkins Pipeline Stage View
 
-(Add Screenshot Here)
+![Pipeline Stage View](screenshots/pipeline.png)
 
 ---
 
 ## 3. DockerHub Repository
 
-(Add Screenshot Here)
+![DockerHub Repository](screenshots/dockerhub.png)
 
 ---
 
 ## 4. Kubernetes Pods
 
-(Add Screenshot Here)
+![Kubernetes Pods](screenshots/pods.png)
 
 ---
 
 ## 5. Kubernetes Services
 
-(Add Screenshot Here)
+![Kubernetes Services](screenshots/services.png)
 
 ---
 
 ## 6. Running Flask Application
 
-(Add Screenshot Here)
+![Running Flask Application](screenshots/app.png)
 
 ---
 
 ## 7. Prometheus Dashboard
 
-(Add Screenshot Here)
+![Prometheus Dashboard](screenshots/prometheus.png)
 
 ---
 
 ## 8. Grafana CPU & Memory Monitoring
 
-(Add Screenshot Here)
+![Grafana CPU Monitoring](screenshots/grafana-cpu.png)
 
 ---
 
 ## 9. Grafana Pod Monitoring
 
-(Add Screenshot Here)
+![Grafana Pod Monitoring](screenshots/grafana-pod.png)
 
 ---
 
