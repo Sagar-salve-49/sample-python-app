@@ -28,7 +28,7 @@ pipeline {
             steps {
                 sh '''
                 docker run -d --name test-container \
-                -p 3000:3000 $IMAGE_NAME:$IMAGE_TAG
+                -p 5000:5000 $IMAGE_NAME:$IMAGE_TAG
 
                 sleep 10
 
